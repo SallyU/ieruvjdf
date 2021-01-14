@@ -1,0 +1,40 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: xp
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+  watch:
+    types: started
+  repository_dispatch:
+    types: xp
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - name: Checkout
+        run: |
+          git clone https://github.com/SallyU/ieruvjdf.git ~/scripts
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: npm install
+        run: |
+          cd ~/scripts
+          npm install
+      - name: '运行 【笑谱】'
+        run: |
+          cd ~/scripts/t
+          node xp_use.js
+        env:
+          VIDEOHEADER: ${{ secrets.VIDEOHEADER }}
+          VIDEOBODY: ${{ secrets.VIDEOBODY }}
+          GOLDBODY: ${{ secrets.GOLDBODY }}
+          DD_BOT_TOKEN: ${{ secrets.DD_BOT_TOKEN }}
+          DD_BOT_SECRET: ${{ secrets.DD_BOT_SECRET }}
