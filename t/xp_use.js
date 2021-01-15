@@ -196,13 +196,7 @@ async function beginScript() {
   for (let i = 0; i < videoheaderArr.length; i++) {
     if (videoheaderArr[i]) {
       videoheader = videoheaderArr[i];
-
-      let videoheaderObj = JSON.parse(videoheader)
-
-      // 增加时间戳
-      videoheaderObj.traceid = '31348519185679441920' + (myTimeStamp) + '00002bfa26fc'; // 北京时间戳
-
-      videoheader = JSON.stringify(videoheaderObj)
+      videoheader = videoheader.replace(/\d{21,33}/,`31348519185679441920${myTimeStamp}`)
 
       videobody = videobodyArr[i];
       goldbody = goldbodyArr[i];
@@ -212,9 +206,9 @@ async function beginScript() {
 
 
       await genTimeFormat(); // 时间格式化
-      await iboxpay(); // 用户信息
+      // await iboxpay(); // 用户信息
 
-      await liveStatus();
+      // await liveStatus();
       await control(); // 看视频或者金蛋视频
 
       await profit();
@@ -262,9 +256,9 @@ async function control() {
   }
 
   // 看直播
-  if(noLive < 50 && hour >= 8 && hour <= 23) {
+  /* if(noLive < 50 && hour >= 8 && hour <= 23) {
     await watch_livevideo()
-  }
+  } */
 }
 
 //video
@@ -280,7 +274,7 @@ function watch_video() {
       try {
         if (data) {
           let result = JSON.parse(data)
-          if(logs==1)console.log(result)
+          if(logs==1)console.log(data)
 
           message = `📣看视频`
 
@@ -313,7 +307,7 @@ function watch_goldvideo() {
       try {
         if (data) {
           let result = JSON.parse(data)
-          if(logs==1)console.log(result)
+          if(logs==1)console.log(data)
           
           message = '📣看金蛋视频'
           if(result.resultCode == 1) {
@@ -342,7 +336,7 @@ function profit() {
       try {
         if (data) {
           let result = JSON.parse(data)
-          if(logs==1)console.log(result)
+          if(logs==1)console.log(data)
           
           let num = data.match(/"type":1/ig) ? data.match(/"type":1/ig).length : 0
           $.log('视频数量：'+num)
@@ -375,7 +369,7 @@ function balance() {
     $.get(balanceurl,(error, response, data) => {
       try {
        let result = JSON.parse(data)
-       if(logs==1)console.log(result)
+       if(logs==1)console.log(data)
 
        if(result.resultCode == 1) {
          message += '金币余额：'+result.data.coinSum+'\n现金余额：'+result.data.balanceSum/100+'\n'
@@ -425,7 +419,7 @@ function watch_livevideo() {
       url: `https://veishop.iboxpay.com/nf_gateway/nf_customer_activity/day_cash/v1/give_redbag_by_live.json`,
       headers: JSON.parse(videoheader),
       //timeout: 60000,
-      body: `{"actId":"252","liveId":"${liveids}"}`
+      body: `{"actId":"259","liveId":"${liveids}"}`
     }
 
     $.post(watch_livevideourl,(error, response, data) => {
