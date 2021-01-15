@@ -30,15 +30,15 @@ $.idx = ($.idx = ($.getval("xpsetting") || "1") - 1) > 0 ? `${$.idx + 1}` : ""; 
 
 // ========================================
 
-let actId = process.env.ACTID || '259'
+let actId = process.env.ACTID // || '259'
 
 
-let token = process.env.TOKEN || '1e026b6a03444a8c8ff55d05e4abaaef'
+let token = process.env.TOKEN // || '1e026b6a03444a8c8ff55d05e4abaaef'
 
 
-let traceid = process.env.TRACEID || '313485191856794419201610667296520a4b82bfa26fc'
+let traceid = process.env.TRACEID // || '313485191856794419201610667296520a4b82bfa26fc'
 
-let videoIdListArr =  JSON.parse(process.env.VLIST) || [1346361764020342784,1349760689785290752,1332329192975761408,1349416520856387584,1328142146665234432]
+let videoIdListArr =  JSON.parse(process.env.VLIST) // || [1346361764020342784,1349760689785290752,1332329192975761408,1349416520856387584,1328142146665234432]
 
 
 // =======================================
@@ -51,9 +51,9 @@ let videoListArr = videoIdListArr.map(val => {
 })
 
 let videoListArrStr = JSON.stringify(videoListArr).replace(/^(\s|")+|(\s|")+$/g, '')
-let videoheaderArr = [`{"Host":"veishop.iboxpay.com","X-User-Agent":"VeiShop, 1.4.4 (iOS, 14.3, en_CN, Apple, iPhone, B41708B8-BD50-419D-B49C-A282BA6D24A1)","version":"1.4.4","shopkeeperId":"1148855820752977920","Accept":"*/*","source":"VEISHOP_APP_IOS","Accept-Language":"en-GB;q=1, zh-Hans-CN;q=0.9, en-CN;q=0.8, en;q=0.7","Accept-Encoding":"gzip, deflate, br","token":"${token}","Content-Type":"application/json; charset=utf-8","Content-Length":"233","User-Agent":"VeiShop, 1.4.4 (iOS, 14.3, en_CN, Apple, iPhone, B41708B8-BD50-419D-B49C-A282BA6D24A1)","traceid":"${traceid}","Connection":"keep-alive","mchtNo":"100529600058887"}`];
-let videobodyArr=[`{"type":1,"videoList":${videoListArrStr},"actId":"${actId}"}`];
-let goldbodyArr=[`{"type":2,"videoList":${videoListArrStr},"actId":"${actId}"}`];
+let videoheaderArr = [`{"Host":"veishop.iboxpay.com","X-User-Agent":"VeiShop, 1.4.4 (iOS, 14.3, en_CN, Apple, iPhone, B41708B8-BD50-419D-B49C-A282BA6D24A1)","version":"1.4.4","shopkeeperId":"1148855820752977920","Accept":"*/*","source":"VEISHOP_APP_IOS","Accept-Language":"en-GB;q=1, zh-Hans-CN;q=0.9, en-CN;q=0.8, en;q=0.7","Accept-Encoding":"gzip, deflate, br","token":${token},"Content-Type":"application/json; charset=utf-8","Content-Length":"233","User-Agent":"VeiShop, 1.4.4 (iOS, 14.3, en_CN, Apple, iPhone, B41708B8-BD50-419D-B49C-A282BA6D24A1)","traceid":${traceid},"Connection":"keep-alive","mchtNo":"100529600058887"}`];
+let videobodyArr=[`{"type":1,"videoList":${videoListArrStr},"actId":${actId}}`];
+let goldbodyArr=[`{"type":2,"videoList":${videoListArrStr},"actId":${actId}}`];
 
 let videoheader = '' // $.getdata('videoheader')
 let videobody = '' // $.getdata('videobody')
