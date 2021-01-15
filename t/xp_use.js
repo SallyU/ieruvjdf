@@ -1,6 +1,6 @@
 /*
 
-原作者：执意ZhiYi-N(github：https://github.com/ZhiYi-N/script)
+原作者：执意ZhiYi-N (github：https://github.com/ZhiYi-N/script)
 修改： Kyle
 
 =======================================================
@@ -68,12 +68,30 @@ let notice = true // 通知 true or false
 
 const logs = 0;//0为关闭日志，1为开启
 
-let hour = $.isNode() ? new Date( new Date().getTime() + 8 * 60 * 60 * 1000 ).getHours() : (new Date()).getHours()
-let minute = $.isNode() ? new Date( new Date().getTime() + 8 * 60 * 60 * 1000 ).getMinutes() : (new Date()).getMinutes()
+let myDate = ''
+
+let year = ''
+let month = ''
+let strDate = ''
+
+let hour = ''
+let minute = ''
+
+let currentdate = ''
+
+let myTimeStamp = ''
+
+let sep = '-'
 
 let gold = 0
 
 let message = '' // 提示消息
+
+
+let noLive = '' // 直播是否有
+let live = 0
+
+const liveid = '1348602411185672599'
 
 //CK运行
 /* let isGetCookie = typeof $request !== 'undefined'
@@ -153,9 +171,6 @@ if (!videoheaderArr[0]) {
   
   console.log(`-------------共${videoheaderArr.length}个账号----------------\n`)
 
-  console.log(`============ 脚本执行-国际标准时间(UTC)：${new Date().toLocaleString()}  =============\n`)
-  console.log(`============ 脚本执行-北京时间(UTC+8)：${new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toLocaleString()}  =============\n`)
-
   // for github ac use
   if ($.isNode()) {
     let count = 0
@@ -165,7 +180,7 @@ if (!videoheaderArr[0]) {
 
       await beginScript();
 
-      console.log(`============第${count}次执行完毕，💤💤💤💤💤💤============\n`)
+      console.log(`============第${count}次执行完毕，2mins💤💤💤💤💤💤============\n`)
       await $.wait(120000);
     }
   } else {
@@ -185,7 +200,7 @@ async function beginScript() {
       let videoheaderObj = JSON.parse(videoheader)
 
       // 增加时间戳
-      videoheaderObj.traceid = '31348519185679441920' + (new Date().getTime() + 8 * 60 * 60 * 1000) + '00002bfa26fc'; // 北京时间戳
+      videoheaderObj.traceid = '31348519185679441920' + (myTimeStamp) + '00002bfa26fc'; // 北京时间戳
 
       videoheader = JSON.stringify(videoheaderObj)
 
@@ -196,10 +211,14 @@ async function beginScript() {
       console.log(`开始【${jsname}${$.index}】\n`);
 
 
-      await iboxpay();
-      await control();
+      await genTimeFormat(); // 时间格式化
+      await iboxpay(); // 用户信息
+
+      await liveStatus();
+      await control(); // 看视频或者金蛋视频
 
       await profit();
+      await balance();
       await SendMsg();
     }
  }
@@ -240,6 +259,11 @@ async function control() {
     await watch_goldvideo();
   } else {
     await watch_video();
+  }
+
+  // 看直播
+  if(noLive < 50 && hour >= 8 && hour <= 23) {
+    await watch_livevideo()
   }
 }
 
@@ -340,6 +364,93 @@ function profit() {
   })
 }
 
+// 汇总
+function balance() {
+  return new Promise((resolve, reject) => {
+    let balanceurl = {
+      url: 'https://veishop.iboxpay.com/nf_gateway/nf_customer_activity/day_cash/v1/balance.json?source=WX_APP_KA_HTZP',
+      headers :JSON.parse(videoheader)
+    }
+
+    $.get(balanceurl,(error, response, data) => {
+      try {
+       let result = JSON.parse(data)
+       if(logs==1)console.log(result)
+
+       if(result.resultCode == 1) {
+         message += '金币余额：'+result.data.coinSum+'\n现金余额：'+result.data.balanceSum/100+'\n'
+        } else {
+          message +='⚠️balance接口异常\n'
+        }
+      } catch(e) {
+       $.logErr(e, response)
+      } finally {
+       resolve()
+      }
+     })
+  })
+}
+
+// 直播状态
+function liveStatus() {
+  return new Promise((resolve, reject) => {
+    let statusurl ={
+      url: `https://veishop.iboxpay.com/nf_gateway/nf_customer_activity/day_cash/v1/list_gold_coin.json?date=${currentdate}&actTypeId=10&size=60`,
+      headers :JSON.parse(videoheader)
+    }
+
+    $.get(statusurl,(error, response, data) => {
+      try {
+        let result = JSON.parse(data)
+        if(logs==1)$.log(result)
+      
+        noLive = data.match(/"type":1/i) ? data.match(/"type":1/ig).length : 1
+
+        $.log('xplive'+noLive)
+      } catch(e) {
+        $.logErr(e, response)
+      } finally {
+        resolve()
+      }
+    })
+  })
+}
+
+// 看直播
+function watch_livevideo() {
+  let liveids = liveid.replace(/\d{3}$/,Math.floor(Math.random()*1000));
+  $.log(liveids)
+  return new Promise((resolve, reject) => {
+    let watch_livevideourl = {
+      url: `https://veishop.iboxpay.com/nf_gateway/nf_customer_activity/day_cash/v1/give_redbag_by_live.json`,
+      headers: JSON.parse(videoheader),
+      //timeout: 60000,
+      body: `{"actId":"252","liveId":"${liveids}"}`
+    }
+
+    $.post(watch_livevideourl,(error, response, data) => {
+
+      try {
+        let result = JSON.parse(data)
+        if(logs==1) $.log(data)
+        message += '📣看直播\n'
+
+        if(result.resultCode == 1) {
+          message += '获得'+result.data.goldCoinAmt+'\n'
+        } else {
+          message +='⚠️异常'+result.errorDesc+'\n'
+          live = 0;
+        }
+      } catch(e) {
+        $.logErr(e, response)
+      } finally {
+        resolve()
+      }
+    })
+  })
+
+}
+
 // 通知
 async function SendMsg() {
   if(notice) {
@@ -355,6 +466,28 @@ async function SendMsg() {
     }
 
   }
+}
+
+// 格式化时间
+function genTimeFormat() {
+  myTimeStamp = $.isNode() ? (new Date().getTime() + 8 * 60 * 60 * 1000) : new Date().getTime()
+
+  myDate = $.isNode() ? new Date(myTimeStamp) : new Date()
+  hour = myDate.getHours()
+  minute = myDate.getMinutes()
+  year = date.getFullYear()
+  month = date.getMonth() + 1
+  strDate = date.getDate();
+
+  if (month >= 1 && month <= 9) {
+    month = '0' + month
+  }
+
+  if (strDate >= 0 && strDate <= 9) {
+    strDate = '0' + strDate
+  }
+  
+  currentdate = year + sep + month + sep + strDate
 }
 
 
