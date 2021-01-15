@@ -475,9 +475,9 @@ function genTimeFormat() {
   myDate = $.isNode() ? new Date(myTimeStamp) : new Date()
   hour = myDate.getHours()
   minute = myDate.getMinutes()
-  year = date.getFullYear()
-  month = date.getMonth() + 1
-  strDate = date.getDate();
+  year = myDate.getFullYear()
+  month = myDate.getMonth() + 1
+  strDate = myDate.getDate();
 
   if (month >= 1 && month <= 9) {
     month = '0' + month
