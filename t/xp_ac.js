@@ -38,8 +38,7 @@ let token = process.env.TOKEN || '1e026b6a03444a8c8ff55d05e4abaaef'
 
 let traceid = process.env.TRACEID || '313485191856794419201610667296520a4b82bfa26fc'
 
-console.log(process.env.ACTID, '========' + process.env.TOKEN, '========' + process.env.TRACEID, '========' + process.env.VLIST)
-let videoIdListArr =  process.env.VLIST || [1346361764020342784,1349760689785290752,1332329192975761408,1349416520856387584,1328142146665234432]
+let videoIdListArr =  JSON.parse(process.env.VLIST) || [1346361764020342784,1349760689785290752,1332329192975761408,1349416520856387584,1328142146665234432]
 
 
 // =======================================
